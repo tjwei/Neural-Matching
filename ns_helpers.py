@@ -21,11 +21,11 @@ def prep_image(im, IMAGE_W, IMAGE_H, BGR=BGR, bw=False):
     if h*IMAGE_W < w*IMAGE_H:
         im = skimage.transform.resize(im, (IMAGE_H, w*IMAGE_H//h), preserve_range=True)
     else:
-        im = skimage.transform.resize(im, (h*IMAGE_W//w, IMAGE_W), preserve_range=True)        
+        im = skimage.transform.resize(im, (h*IMAGE_W//w, IMAGE_W), preserve_range=True)            
 
     # Central crop
     h, w, _ = im.shape
-    im = im[h//2-IMAGE_H//2:h//2+IMAGE_H//2, w//2-IMAGE_W//2:w//2+IMAGE_W//2]    
+    im = im[h//2-IMAGE_H//2:h//2+IMAGE_H-IMAGE_H//2, w//2-IMAGE_W//2: w//2-IMAGE_W//2 +IMAGE_W]        
     rawim = im.astype('uint8')
     # Shuffle axes to c01
     if bw:
@@ -71,7 +71,7 @@ def Eval(i, Out):
     return Func(i, [], Out)()
 
 def Shared(i, v):
-    if i in shared_mem:
+    if i in shared_mem:        
         shared_mem[i].set_value(v)
     else:
         shared_mem[i]=theano.shared(v)
