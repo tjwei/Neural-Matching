@@ -10,10 +10,13 @@ try:
     from lasagne.layers.dnn import Conv2DDNNLayer as ConvLayer
 except:
     print("unable to import Conv2DDNNLayer, use Conv2DLayer instead")
-    from lasagne.layers import Conv2DLayer as ConvLayer
+    from lasagne.layers import Conv2DLayer as ConvLayer0    
+    def ConvLayer(*args, **kwargs):
+        return ConvLayer0(*args, flip_filters=False, **kweargs)
+    
 from lasagne.layers import Pool2DLayer as PoolLayer
 
-def load_vgg19():
+def load_vgg19(pkl_filename="vgg19_normalized.pkl"):
     net = {}
     net['input'] = InputLayer((1, 3, None, None))
     net['conv1_1'] = ConvLayer(net['input'], 64, 3, pad=1)
@@ -39,9 +42,9 @@ def load_vgg19():
     net['pool5'] = PoolLayer(net['conv5_4'], 2, mode='average_exc_pad')
     if bytes == str:
     # Python 2
-        values = pickle.load(open('vgg19_normalized.pkl', 'rb'))['param values']
+        values = pickle.load(open(pkl_filename, 'rb'))['param values']
     else:
         #Python 3
-        values = pickle.load(open('vgg19_normalized.pkl', 'rb'), encoding='latin1')['param values']
-    set_all_param_values(net['pool5'], values)
+        values = pickle.load(open(pkl_filename, 'rb'), encoding='latin1')['param values']
+    set_all_param_values(net['pool5'], values[:32])
     return net
